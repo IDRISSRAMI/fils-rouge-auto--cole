@@ -1,11 +1,9 @@
-// routes/auth.routes.js
 import express from 'express';
 import { registerUser, loginUser } from '../controllers/auth.controller.js';
 import { body } from 'express-validator';
 
 const router = express.Router();
 
-// 🔐 Route d'inscription
 router.post(
   '/register',
   [
@@ -16,7 +14,6 @@ router.post(
   registerUser
 );
 
-// 🔑 Route de connexion
 router.post('/login', loginUser);
 
 export default router;

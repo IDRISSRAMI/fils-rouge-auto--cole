@@ -1,12 +1,25 @@
-import express from 'express';
+import { Router } from 'express';
 import { createLesson, getAllLessons } from '../controllers/lesson.controller.js';
+import { verifyToken, requireRole } from '../middlewares/auth.js';
+import { body } from 'express-validator';
+import { validate } from '../middlewares/validate.js';
 
-const router = express.Router();
+const router = Router();
 
-// Ajouter une leçon
-router.post('/', createLesson);
+router.post(
+  '/',
+  verifyToken,
+  requireRole('instructor'),
+  [
+    body('student').notEmpty().withMessage('ID de l’étudiant requis'),
+    body('instructor').notEmpty().withMessage('ID de l’instructeur requis'),
+    body('date').isISO8601().withMessage('Date invalide'),
+    body('duration').isNumeric().withMessage('Durée invalide'),
+  ],
+  validate,
+  createLesson
+);
 
-// Voir toutes les leçons
-router.get('/', getAllLessons);
+router.get('/', verifyToken,  getAllLessons);
 
 export default router;
