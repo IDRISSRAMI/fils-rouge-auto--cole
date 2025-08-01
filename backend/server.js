@@ -8,12 +8,14 @@ import paymentRoutes from './routes/payment.routes.js';
 import examRoutes from './routes/exam.routes.js';
 import studentRoutes from './routes/student.routes.js';
 import instructorRoutes from './routes/instructor.routes.js';
+import { startScheduler } from './utils/scheduler.js';
 // Charger .env
 dotenv.config();
 
 // Connexion DB
 connectDB();
 
+startScheduler();
 // Initialiser Express
 const app = express();
 
