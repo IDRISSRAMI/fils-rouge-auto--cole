@@ -17,14 +17,14 @@ export const startScheduler = () => {
           $gte: new Date(today + 'T00:00:00'),
           $lt: new Date(today + 'T23:59:59'),
         },
-      }).populate('student', 'name email phone');
+      }).populate('student', 'name email phone');   
 
       for (const exam of exams) {
         const { name, email, phone } = exam.student;
 
         const message = `Bonjour ${name}, vous avez un examen aujourd'hui à ${exam.date.toLocaleTimeString()}`;
 
-        await sendEmail(email, '📅 Rappel Examen', `<p>${message}</p>`);
+        await sendEmail(email, 'Rappel Examen', `<p>${message}</p>`);
         await sendSMS(phone, message);
       }
     } catch (err) {

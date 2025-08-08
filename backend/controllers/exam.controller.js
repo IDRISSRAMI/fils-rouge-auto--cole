@@ -7,20 +7,28 @@ export const createExam = async (req, res) => {
   try {
     let newExam = new Exam(req.body);
 
-    // Populer student bach njib email w phone
-    newExam = await newExam.populate('student', 'email phone name').execPopulate();
+    // Populate student info
+    newExam = await newExam.populate('student', 'email phone name');
 
     await newExam.save();
 
-    // Préparer message
     const studentEmail = newExam.student?.email;
     const studentPhone = newExam.student?.phone;
 
     const message = `Bonjour ${newExam.student?.name}, un nouvel examen est planifié pour le ${newExam.date.toLocaleDateString()}. Bon courage!`;
 
-    // Envoyer email et sms
+    // Send email + SMS
     if (studentEmail) await sendEmail(studentEmail, 'Nouvel examen planifié', message);
     if (studentPhone) await sendSMS(studentPhone, message);
+
+    // ✅ Emit socket notification
+    if (req.io) {
+      req.io.emit('notification', {
+        type: 'exam',
+        message: `Nouvel examen prévu pour ${newExam.date.toLocaleDateString()}`,
+        data: newExam
+      });
+    }
 
     res.status(201).json(newExam);
   } catch (error) {

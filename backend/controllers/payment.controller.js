@@ -5,6 +5,14 @@ export const createPayment = async (req, res) => {
     const { student, amountPaid, balance } = req.body;
     const newPayment = new Payment({ student, amountPaid, balance });
     await newPayment.save();
+
+    const io = req.app.get("io");
+    io.emit("notification", {
+      type: "payment",
+      message: `Nouveau paiement enregistré pour ${student}`,
+      data: newPayment
+    });
+
     res.status(201).json({ message: 'Paiement enregistré', payment: newPayment });
   } catch (error) {
     res.status(500).json({ message: 'Erreur serveur', error });
